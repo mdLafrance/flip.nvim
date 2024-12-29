@@ -1,86 +1,54 @@
-*tabby.nvim.txt*                                       Tabs like a regular IDE
+*flip.nvim.txt*                            Quickly flip between recent buffers
 
 Author: Max Lafrance <github.com/mdlafrance>
 
 ==============================================================================
-								       *tabby*
+								       *flip*
 CONTENTS
 
-    1. ABOUT ....................... |tabby-about|
-    2. USAGE ....................... |tabby-usage|
-    3. REQUIREMENTS ................ |tabby-requirements|
-    4. COMMANDS .................... |tabby-commands|
-    5. CONFIGURATION ............... |tabby-configuration|
-	5.1 OPTIONS ................ |tabby-configuration-options|
-	5.1 LAZY ................... |tabby-configuration-lazy|
-    6. TIPS AND TRICKS ............. |tabby-tips-and-tricks|
+    1. ABOUT ....................... |flip-about|
+    2. USAGE ....................... |flip-usage|
+    3. REQUIREMENTS ................ |flip-requirements|
+    4. COMMANDS .................... |flip-commands|
+    5. CONFIGURATION ............... |flip-configuration|
+	5.1 OPTIONS ................ |flip-configuration-options|
+	5.1 LAZY ................... |flip-configuration-lazy|
+    6. TIPS AND TRICKS ............. |flip-tips-and-tricks|
 
 ==============================================================================
-								 *tabby-about*
+								 *flip-about*
 1. ABOUT 
 
-Tabby brings ide-like tabs to neovim. Typically, in a visual editor, you 
-have panes open each with their own tabs, as well as side content like file
-explorers or debuggers. Vim has a different concept of tabs, in which one tab
-contains the entire screen worth of windows (including any side content which
-are themselves just windows into special buffers).
-
-Tabby lets you open virtual tab groups on top of your windows themselves, so
-you can keep your side content open while flipping between buffers. You can even
-have two windows with different tab groups open side by side (or as many as you want).
-
-Tab groups created by tabby also support some features you might be used to 
-from other visual editors, like mouse support, and clickable close 
-functionality.
+TODO
 
 ==============================================================================
-								 *tabby-usage*
+								 *flip-usage*
 2. USAGE 
 
-Tabby operates on the concept of "tab groups". A window can be marked as a 
-tab group, and then tabs can be opened on that window. You'll know that a
-window is a tab group when you can see the tab bar displayed. 
+TODO
 
-Interaction with tabby is exposed with a collection of user commands detailed
-below in |tabby-commands|. See |tabby-tips-and-tricks| for some suggested
-workflows and keybinds.
-
-Behind the scenes, tabby is associating a small data structure with that
-window id, and swapping out the visible buffer on that window based on your commands.
-
-If you are looking to implement more advanced functionality, the api is well
-documented in the core module.
->
-    require("tabby-core").set_current_tab(0, 2)
-<
 ==============================================================================
-							  *tabby-requirements*
+							  *flip-requirements*
 3. REQUIREMENTS
 
 - Neovim 0.8 or higher is required.
 
-- Tabby uses the |winbar| to display tab group information. Therefore, it is
-incompatible with any plugins that also want to use the |winbar|.
-
-- Tabby depends on the following plugins:
-  1. |telescope.nvim|
+- Flip depends on the following plugins:
+  1. |plenary|
   2. |nvim-web-devicons|
 
   Ensure that these plugins are installed with your plugin manager of choice.
 
-  NOTE: If you disable icons in the tab bar, then you do not need 
-  `nvim-web-devicons`. See |tabby-configuration-options|.
-
 ==============================================================================
-							      *tabby-commands*
+							      *flip-commands*
 3. COMMANDS
 
-Tabby exposes the following user commands:
+Flip exposes the following user commands:
 
 
 *:TabbyHelp*
     
-    Opens the tabby help file. Exactly the same as running `:help tabby-nvim`.
+    Opens the flip help file. Exactly the same as running `:help flip-nvim`.
 
 
 *:TabbyNewTab*
@@ -161,21 +129,21 @@ Tabby exposes the following user commands:
     debugging purposes.
 
 ==============================================================================
-							 *tabby-configuration*
+							 *flip-configuration*
 5. CONFIGURATION
 
-Tabby must be initialized at startup by calling the *tabby-setup()* function. 
+Flip must be initialized at startup by calling the *flip-setup()* function. 
 
 At what point you call the setup function depends on your neovim plugin 
 manager of choice.
 
 -----------------------------------------------------------------------------
-						    *tabby-configuration-options*
+						    *flip-configuration-options*
 5.1 OPTIONS
 
 `setup()` accepts a table with the following options:
 >
-    require("tabby").setup({
+    require("flip").setup({
 	remove_tab_group_if_only_tab = true,
 	show_icon_in_tab_bar = true,
 	show_close_all_button_in_tab_bar = true,
@@ -213,13 +181,13 @@ manager of choice.
 
 
 -----------------------------------------------------------------------------
-						    *tabby-configuration-lazy*
+						    *flip-configuration-lazy*
 5.2 LAZY
 
-If using Lazy.nvim, the following snippet is enough to enable Tabby:
+If using Lazy.nvim, the following snippet is enough to enable Flip:
 >
     return {
-	"mdlafrance/tabby-nvim",
+	"mdlafrance/flip-nvim",
 	opts = {
 	    -- options
 	}
@@ -228,21 +196,21 @@ If using Lazy.nvim, the following snippet is enough to enable Tabby:
 or
 >
     return {
-	"mdlafrance/tabby-nvim",
+	"mdlafrance/flip-nvim",
 	config = function()
-	    require("tabby").setup({
+	    require("flip").setup({
 		-- options
 	    })
 	end
     }
 
-It's important to either define a *config()* function which calls Tabby's
+It's important to either define a *config()* function which calls Flip's
 setup function, or to provide opts so that lazy will call the setup function
 itself.
 
 
 -----------------------------------------------------------------------------
-						       *tabby-tips-and-tricks*
+						       *flip-tips-and-tricks*
 6. TIPS AND TRICKS
 
 Defining some keymaps can be usefule for quickly managing tabs. For example:
