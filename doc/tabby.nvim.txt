@@ -1,0 +1,268 @@
+*tabby.nvim.txt*                                       Tabs like a regular IDE
+
+Author: Max Lafrance <github.com/mdlafrance>
+
+==============================================================================
+								       *tabby*
+CONTENTS
+
+    1. ABOUT ....................... |tabby-about|
+    2. USAGE ....................... |tabby-usage|
+    3. REQUIREMENTS ................ |tabby-requirements|
+    4. COMMANDS .................... |tabby-commands|
+    5. CONFIGURATION ............... |tabby-configuration|
+	5.1 OPTIONS ................ |tabby-configuration-options|
+	5.1 LAZY ................... |tabby-configuration-lazy|
+    6. TIPS AND TRICKS ............. |tabby-tips-and-tricks|
+
+==============================================================================
+								 *tabby-about*
+1. ABOUT 
+
+Tabby brings ide-like tabs to neovim. Typically, in a visual editor, you 
+have panes open each with their own tabs, as well as side content like file
+explorers or debuggers. Vim has a different concept of tabs, in which one tab
+contains the entire screen worth of windows (including any side content which
+are themselves just windows into special buffers).
+
+Tabby lets you open virtual tab groups on top of your windows themselves, so
+you can keep your side content open while flipping between buffers. You can even
+have two windows with different tab groups open side by side (or as many as you want).
+
+Tab groups created by tabby also support some features you might be used to 
+from other visual editors, like mouse support, and clickable close 
+functionality.
+
+==============================================================================
+								 *tabby-usage*
+2. USAGE 
+
+Tabby operates on the concept of "tab groups". A window can be marked as a 
+tab group, and then tabs can be opened on that window. You'll know that a
+window is a tab group when you can see the tab bar displayed. 
+
+Interaction with tabby is exposed with a collection of user commands detailed
+below in |tabby-commands|. See |tabby-tips-and-tricks| for some suggested
+workflows and keybinds.
+
+Behind the scenes, tabby is associating a small data structure with that
+window id, and swapping out the visible buffer on that window based on your commands.
+
+If you are looking to implement more advanced functionality, the api is well
+documented in the core module.
+>
+    require("tabby-core").set_current_tab(0, 2)
+<
+==============================================================================
+							  *tabby-requirements*
+3. REQUIREMENTS
+
+- Neovim 0.8 or higher is required.
+
+- Tabby uses the |winbar| to display tab group information. Therefore, it is
+incompatible with any plugins that also want to use the |winbar|.
+
+- Tabby depends on the following plugins:
+  1. |telescope.nvim|
+  2. |nvim-web-devicons|
+
+  Ensure that these plugins are installed with your plugin manager of choice.
+
+  NOTE: If you disable icons in the tab bar, then you do not need 
+  `nvim-web-devicons`. See |tabby-configuration-options|.
+
+==============================================================================
+							      *tabby-commands*
+3. COMMANDS
+
+Tabby exposes the following user commands:
+
+
+*:TabbyHelp*
+    
+    Opens the tabby help file. Exactly the same as running `:help tabby-nvim`.
+
+
+*:TabbyNewTab*
+
+    Opens a telescope picker to browse for a file to open as a new tab.
+    If the current window isn't a tab group, it is converted into one.
+
+    If the current window is not writable, then a new window is opened with a tab 
+    group.
+
+
+*:TabbyCloseTab*
+
+    Closes the current tab in the current tab group.
+
+
+*:TabbyCloseOtherTabs*
+
+    Closes all tabs except the current one on the current tab group.
+
+
+*:TabbyConvertToTabGroup*
+
+    Converts the current window into a tab group with the current buffer set
+    as the first tab.
+
+
+*:TabbyNextTab
+
+    Cycle to the next tab in the current tab group.
+
+
+*:TabbyPreviousTab*
+
+    Cycle to the previous tab in the current tab group.
+
+
+*:TabbySetTab* {index}
+
+    Set the current tab in the current tab group to the tab at the given index.
+
+    Arguments:
+	{index} The index of the tab to switch to. 1-indexed like lua.
+
+
+*:TabbyDetach* {direction}
+
+    "Detaches" the current tab into a new window, performing a split in the
+    specified direction.
+
+    Arguments:
+	{direction} The direction to split the tab group into. Valid values are
+	left, right, above, and below - the same as vim's |:split|.
+
+    Examples:
+    >
+	:TabbyDetach right
+
+
+*:TabbyMerge* {direction}
+
+    "Merges" the current tab or tab group into the closest window or tabgroup
+    in the given direction. If the target window is not a tab group, it is
+    first converted into one.
+
+    Arguments:
+	{direction} The direction to merge in. Valid values are "up", "down",
+	"left", "right".
+
+    Examples:
+    >
+	:TabbyMerge right
+
+
+*:TabbyShowTabs*
+
+    Prints information about all currently registered tab groups. For
+    debugging purposes.
+
+==============================================================================
+							 *tabby-configuration*
+5. CONFIGURATION
+
+Tabby must be initialized at startup by calling the *tabby-setup()* function. 
+
+At what point you call the setup function depends on your neovim plugin 
+manager of choice.
+
+-----------------------------------------------------------------------------
+						    *tabby-configuration-options*
+5.1 OPTIONS
+
+`setup()` accepts a table with the following options:
+>
+    require("tabby").setup({
+	remove_tab_group_if_only_tab = true,
+	show_icon_in_tab_bar = true,
+	show_close_all_button_in_tab_bar = true,
+	debug = false,
+	suppress_notifications = false,
+    })
+<
+
+
+`remove_tab_group_if_only_tab` (default: true)
+
+    If true, then when a tab becomes the only tab in the group, the tab
+    group is removed (the buffer stays open).
+
+
+`show_icon_in_tab_bar` (default: true)
+
+   If true, an icon for the current filetype is shown in the tab bar. 
+
+
+`show_close_all_button_in_tab_bar` (default: true)
+
+    If true, a button is shown in the tab bar which closes all tabs.
+
+
+`debug` (default: false)
+
+    If true, then enables debug logging.
+
+
+`suppress_notifications` (default: false)
+
+    If true, then no notifications are shown when a tab is closed.
+    Notifications are triggered to warn the user of unsupported behavior.
+
+
+-----------------------------------------------------------------------------
+						    *tabby-configuration-lazy*
+5.2 LAZY
+
+If using Lazy.nvim, the following snippet is enough to enable Tabby:
+>
+    return {
+	"mdlafrance/tabby-nvim",
+	opts = {
+	    -- options
+	}
+    }
+<
+or
+>
+    return {
+	"mdlafrance/tabby-nvim",
+	config = function()
+	    require("tabby").setup({
+		-- options
+	    })
+	end
+    }
+
+It's important to either define a *config()* function which calls Tabby's
+setup function, or to provide opts so that lazy will call the setup function
+itself.
+
+
+-----------------------------------------------------------------------------
+						       *tabby-tips-and-tricks*
+6. TIPS AND TRICKS
+
+Defining some keymaps can be usefule for quickly managing tabs. For example:
+>
+    vim.keymap.set("n", "<leader>nt", ":TabbyNewTab<CR>", {})
+    vim.keymap.set("n", "<leader>cl", ":TabbyCloseTab<CR>", {})
+
+    vim.keymap.set("n", "<leader>[", ":TabbyPreviousTab<CR>", {})
+    vim.keymap.set("n", "<leader>]", ":TabbyNextTab<CR>", {})
+
+    vim.keymap.set("n", "<leader>tdr", ":TabbyDetach right<CR>", {})
+    vim.keymap.set("n", "<leader>tdd", ":TabbyDetach below<CR>", {})
+
+    vim.keymap.set("n", "<leader>tmr", ":TabbyMerge right<CR>", {})
+    vim.keymap.set("n", "<leader>tml", ":TabbyMerge left<CR>", {})
+
+
+
+
+
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:
