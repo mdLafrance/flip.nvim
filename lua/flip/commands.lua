@@ -22,17 +22,13 @@ local commands = {
         end
     end,
 
-    open_recent = function()
+    to_recent = function()
         if #require("flip.history").get_stack() < 2 then
             log.notify_info("No buffers recently opened")
         else
-            require("flip.window").open_stack_window()
+            require("flip.window").open_recent_buffers_window()
         end
     end,
-
-    show_stack = function()
-        print("Flip recently opened: " .. vim.inspect(require("flip.history").get_stack()))
-    end
 }
 
 --- Register user commands.

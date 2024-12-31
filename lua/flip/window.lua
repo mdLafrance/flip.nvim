@@ -2,11 +2,12 @@
 
 local log = require("flip.log")
 local history = require("flip.history")
-
-FLIP_WINDOW = nil
+local compat = require("flip.compat")
 
 STACK_WINDOW_ID = nil
 STACK_WINDOW_SHOW_FULL_PATH = false
+
+FLIP_HL_NAMESPACE = vim.api.nvim_create_namespace("FLIP")
 
 local function close_stack_window()
     if not STACK_WINDOW_ID then
@@ -57,35 +58,61 @@ local function add_line_to_stack_buffer(item, opts)
     vim.api.nvim_buf_set_lines(opts.bufnr, opts.lineno, opts.lineno, false, { text })
 
     -- Apply hl groups
-    vim.api.nvim_buf_add_highlight(opts.bufnr, -1, "Comment", opts.lineno, 0, #number_text)
-    vim.api.nvim_buf_add_highlight(opts.bufnr, -1, "Comment", opts.lineno, #number_text + #item_text, -1)
+    vim.api.nvim_buf_add_highlight(opts.bufnr, FLIP_HL_NAMESPACE, "Comment", opts.lineno, 0, #number_text)
+    vim.api.nvim_buf_add_highlight(opts.bufnr, FLIP_HL_NAMESPACE, "Comment", opts.lineno, #number_text + #item_text, -1)
 
     if hlg then
-        vim.api.nvim_buf_add_highlight(opts.bufnr, -1, hlg, opts.lineno, #number_text + #item_text + #fill_text, -1)
+        vim.api.nvim_buf_add_highlight(opts.bufnr, FLIP_HL_NAMESPACE, hlg, opts.lineno,
+            #number_text + #item_text + #fill_text, -1)
     end
 
-    vim.api.nvim_buf_add_highlight(opts.bufnr, -1, "Bold", opts.lineno, #number_text, #number_text + #item_text)
+    vim.api.nvim_buf_add_highlight(opts.bufnr, FLIP_HL_NAMESPACE, "Bold", opts.lineno, #number_text,
+        #number_text + #item_text)
+
+    -- vim.api.nvim_buf_add_highlight(opts.bufnr, FLIP_HL_NAMESPACE, "Visual", opts.lineno, 0, -1)
 end
 
-local function open_stack_window()
+---@class RecentBuffersWindowOpts
+---@field relative "win" | "editor"
+---@field centered boolean? Whether or not to open the dialog centered to the given relative element.
+---@field anchor "NW" | "NE" | "SW" | "SE" The anchor point (if not centered).
+local default_recent_buffers_opts = {
+    relative = "win",
+    anchor = "NE",
+    centered = false
+}
+
+---Opens a dialog allowing the user to select a recently opened buffer to edit.
+---@param opts RecentBuffersWindowOpts
+local function open_recent_buffers_window(opts)
+    opts = opts or default_recent_buffers_opts
+
     if STACK_WINDOW_ID then
         close_stack_window()
     end
 
     local parent_window = vim.api.nvim_get_current_win()
 
-    local width = 30
+    local width = 10
     local win_width = vim.api.nvim_win_get_width(parent_window)
     local win_height = vim.api.nvim_win_get_height(parent_window)
 
     local bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_option(bufnr, 'buftype', 'nofile')
-    vim.api.nvim_buf_set_option(bufnr, 'swapfile', false)
+    compat.set_buf_option(bufnr, 'buftype', 'nofile')
+    compat.set_buf_option(bufnr, 'swapfile', false)
 
     local buffer_index_mapping = {}
     local stack = history.get_stack()
 
     local idx = 1
+
+    for _, item in ipairs(stack) do
+        local len = get_relative_path(item)
+
+        if #len + 12 > width then
+            width = #len + 12
+        end
+    end
 
     for i = #stack - 1, 1, -1 do
         local item = stack[i]
@@ -102,13 +129,13 @@ local function open_stack_window()
     end
 
     STACK_WINDOW_ID = vim.api.nvim_open_win(bufnr, true, {
-        relative = 'win',
+        relative = opts.relative,
         width = width,
         height = #stack - 1,
         row = 0,
         col = win_width - 1,
         style = "minimal",
-        anchor = "NE",
+        anchor = opts.anchor,
         border = "rounded",
         title = " Flip to recent "
     })
@@ -228,5 +255,5 @@ end
 
 -- Exports
 return {
-    open_stack_window = open_stack_window
+    open_recent_buffers_window = open_recent_buffers_window
 }
