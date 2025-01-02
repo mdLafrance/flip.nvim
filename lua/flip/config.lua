@@ -1,16 +1,18 @@
 --- Configuration options for flip.
 --- Apply configuration options with the exported `setup` function.
 ---@class FlipConfig
+---@field items_shown number The number of history items to display in visual windows.
 FLIP_CONFIG = {
     history_file = "",
     history_key_function = nil,
+    items_shown = 5,
     debug = true,
 }
 
 --- Ensure the current nvim environment contains all necessary dependencies for flip.
 --- Errors will be thrown if dependencies are missing.
 local function ensure_dependencies()
-    local ok, err = pcall(require, "nui.menu")
+    local ok, _ = pcall(require, "nui.menu")
 
     if not ok then
         error("Flip missing dependency on nui")

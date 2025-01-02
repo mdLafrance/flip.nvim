@@ -1,8 +1,9 @@
 -- Funcionality for opening and managing the flippy history window
 
-local log = require("flip.log")
 local history = require("flip.history")
 local compat = require("flip.compat")
+local util = require("flip.util")
+local config = require("flip.config")
 
 STACK_WINDOW_ID = nil
 STACK_WINDOW_SHOW_FULL_PATH = false
@@ -83,7 +84,7 @@ local default_recent_buffers_opts = {
 }
 
 ---Opens a dialog allowing the user to select a recently opened buffer to edit.
----@param opts RecentBuffersWindowOpts
+---@param opts RecentBuffersWindowOpts|nil
 local function open_recent_buffers_window(opts)
     opts = opts or default_recent_buffers_opts
 
@@ -102,7 +103,7 @@ local function open_recent_buffers_window(opts)
     compat.set_buf_option(bufnr, 'swapfile', false)
 
     local buffer_index_mapping = {}
-    local stack = history.get_stack()
+    local stack = util.slice(history.get_stack(), 1, config.opts.items_shown)
 
     local idx = 1
 

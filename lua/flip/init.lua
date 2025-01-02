@@ -1,3 +1,5 @@
-return {
-    setup = require("flip.config").setup
-}
+local M = {}
+
+M.setup = require("flip.config").setup
+
+return M

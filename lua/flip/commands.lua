@@ -41,6 +41,7 @@ M.register_commands = function()
     end
 
     for name, cmd in pairs(commands) do
+        -- Name mangles commands
         local cmd_name = "Flip" .. string.gsub(util.capitalize(name), "_(%w)", function(letter)
             return string.upper(letter)
         end)

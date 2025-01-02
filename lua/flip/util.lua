@@ -38,4 +38,20 @@ M.deduplicate = function(arr)
     return deduped
 end
 
+M.slice = function(arr, start, end_)
+    local sliced = {}
+
+    for i, x in ipairs(arr) do
+        if i >= start then
+            if i > end_ then
+                break
+            end
+
+            table.insert(sliced, x)
+        end
+    end
+
+    return sliced
+end
+
 return M

@@ -9,7 +9,7 @@ local util = require("flip.util")
 local open_stack = {}
 
 ---@class FlipHistory
-local history = nil
+local HISTORY = nil
 
 --- Get the path on disk to the expected history file location.
 ---@return string config_path
@@ -59,7 +59,7 @@ local function load_history()
     local history_path = config.opts.history_file or get_history_path()
 
     -- Create history file if it doesnt exist
-    local exists, _, err = vim.uv.fs_stat(history_path)
+    local _, _, err = vim.uv.fs_stat(history_path)
 
     if err == "ENOENT" then
         write_history_file(history_path, {})
