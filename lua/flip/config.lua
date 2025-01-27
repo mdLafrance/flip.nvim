@@ -28,7 +28,9 @@ M.opts  = FLIP_CONFIG
 M.setup = function(opts)
     local log = require("flip.log")
 
-    log.debug("Setting up with opts: " .. vim.inspect(opts))
+    if opts.debug then
+        log.debug("Setting up with opts: " .. vim.inspect(opts))
+    end
 
     if opts == nil then
         return

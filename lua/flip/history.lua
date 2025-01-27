@@ -91,6 +91,7 @@ end
 
 --- Add the given file path to the open stack
 local function add_to_stack(file_path)
+    log.debug("Adding file to stack: %s", file_path)
     table.insert(open_stack, file_path)
     open_stack = util.deduplicate(open_stack)
 end
